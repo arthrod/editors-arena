@@ -82,7 +82,7 @@ function statusText(s: Slot): string {
   if (!s.frame) return "Idle";
   if (!s.ready) return "Loading";
   const head = s.startupMs !== null
-    ? "Ready " + Math.round(s.startupMs) + " ms"
+    ? "Ready " + (s.startupMs / 1000).toFixed(1) + " s"
     : "Ready";
   return s.openedName ? head + " · " + s.openedName : head;
 }
