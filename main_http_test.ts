@@ -49,3 +49,12 @@ Deno.test("GET / HTML: every arena nav menu action has a handler id", async () =
     );
   }
 });
+
+Deno.test("crumb reads / arena and Contact is the last menu item (#5)", async () => {
+  const html = await getHtml();
+  assert(html.includes(`<span class="crumb">/ arena</span>`));
+  const menu = html.slice(html.indexOf(`id="arena-menu"`));
+  const items = [...menu.slice(0, menu.indexOf("</header>")).matchAll(/role="menuitem"[^>]*>([^<]*)</g)].map((m) => m[1].trim());
+  assertEquals(items.at(-1), "Contact →");
+  assert(menu.includes(`href="https://arthur.law/contact"`));
+});
