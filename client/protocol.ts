@@ -2,10 +2,9 @@
  * Pure helpers for the editors-arena postMessage protocol and URL state.
  * No DOM access: every function here is unit-tested in protocol_test.ts.
  *
- * The embed-mode contract (open-docs issue #30):
- *   child -> parent: {source:"open-docs", type:"ready"|"error"|"opened", ...}
- *   parent -> child: {source:"editors-arena", type:"open", name, bytes}
- *                  | {source:"editors-arena", type:"sample"}
+ * Embed protocol v2 (see PROTOCOL2.md):
+ *   child -> parent: ready | error | opened | exported
+ *   parent -> child: open | sample | export
  */
 import { engineSlugs } from "../engines.ts";
 
@@ -22,6 +21,8 @@ export const DEFAULT_SLUGS = ["superdoc", "eigenpal", "docxodus"] as const;
 export const MIN_SLOTS = 2;
 export const MAX_SLOTS = 3;
 
+export type ErrorDuring = "mount" | "open" | "export";
+
 export interface ReadyMessage {
   source: typeof CHILD_SOURCE;
   type: "ready";
@@ -34,6 +35,7 @@ export interface ErrorMessage {
   type: "error";
   slug: string;
   message: string;
+  during?: ErrorDuring;
 }
 export interface OpenedMessage {
   source: typeof CHILD_SOURCE;
@@ -41,7 +43,18 @@ export interface OpenedMessage {
   slug: string;
   name: string;
 }
-export type ChildMessage = ReadyMessage | ErrorMessage | OpenedMessage;
+export interface ExportedMessage {
+  source: typeof CHILD_SOURCE;
+  type: "exported";
+  slug: string;
+  name: string;
+  bytes: ArrayBuffer;
+}
+export type ChildMessage =
+  | ReadyMessage
+  | ErrorMessage
+  | OpenedMessage
+  | ExportedMessage;
 
 export interface OpenCommand {
   source: typeof PARENT_SOURCE;
@@ -53,7 +66,11 @@ export interface SampleCommand {
   source: typeof PARENT_SOURCE;
   type: "sample";
 }
-export type ParentCommand = OpenCommand | SampleCommand;
+export interface ExportCommand {
+  source: typeof PARENT_SOURCE;
+  type: "export";
+}
+export type ParentCommand = OpenCommand | SampleCommand | ExportCommand;
 
 /**
  * Read the ?e= state: 2 or 3 comma-separated slugs.
@@ -100,8 +117,12 @@ export function isChildMessage(data: unknown): data is ChildMessage {
         (d.startupMs === undefined || typeof d.startupMs === "number");
     case "opened":
       return typeof d.name === "string";
+    case "exported":
+      return typeof d.name === "string" && d.bytes instanceof ArrayBuffer;
     case "error":
-      return typeof d.message === "string";
+      return typeof d.message === "string" &&
+        (d.during === undefined ||
+          d.during === "mount" || d.during === "open" || d.during === "export");
     default:
       return false;
   }
@@ -115,4 +136,9 @@ export function makeOpen(name: string, bytes: ArrayBuffer): OpenCommand {
 /** Parent -> child: open the built-in sample document. */
 export function makeSample(): SampleCommand {
   return { source: PARENT_SOURCE, type: "sample" };
+}
+
+/** Parent -> child: export the current document as .docx bytes. */
+export function makeExport(): ExportCommand {
+  return { source: PARENT_SOURCE, type: "export" };
 }

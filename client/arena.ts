@@ -6,6 +6,7 @@ import { engines, getEngine } from "../engines.ts";
 import {
   DEFAULT_SLUGS,
   isChildMessage,
+  makeExport,
   makeOpen,
   makeSample,
   MAX_SLOTS,
@@ -24,6 +25,7 @@ interface Slot {
   licEl: HTMLElement | null;
   select: HTMLSelectElement | null;
   alone: HTMLAnchorElement | null;
+  fileInput: HTMLInputElement | null;
   frame: HTMLIFrameElement | null;
   ready: boolean;
   error: string | null;
@@ -53,6 +55,7 @@ for (let i = 0; i < MAX_SLOTS; i++) {
     licEl: null,
     select: null,
     alone: null,
+    fileInput: null,
     frame: null,
     ready: false,
     error: null,
@@ -79,16 +82,32 @@ function statusText(s: Slot): string {
   if (!s.frame) return "Idle";
   if (!s.ready) return "Loading";
   const head = s.startupMs !== null
-    ? "Ready in " + Math.round(s.startupMs) + " ms"
+    ? "Ready " + Math.round(s.startupMs) + " ms"
     : "Ready";
-  return s.openedName ? head + " · opened " + s.openedName : head;
+  return s.openedName ? head + " · " + s.openedName : head;
 }
 
 function paintStatus(s: Slot): void {
   if (!s.statusEl) return;
-  s.statusEl.textContent = statusText(s);
+  const t = statusText(s);
+  s.statusEl.textContent = t;
+  s.statusEl.title = t;
   s.statusEl.classList.toggle("is-ready", s.ready && s.error === null);
   s.statusEl.classList.toggle("is-error", s.error !== null);
+}
+
+/** Trigger a one-shot .docx download in the browser. */
+function downloadDocx(name: string, bytes: ArrayBuffer): void {
+  const base = name.replace(/\.docx$/i, "");
+  const blob = new Blob([bytes], {
+    type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = base + ".docx";
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 /** Create the iframe, replacing the slot's placeholder or previous frame. */
@@ -141,14 +160,47 @@ function mountSlot(s: Slot): void {
   const status = document.createElement("span");
   status.className = "st";
 
+  const acts = document.createElement("div");
+  acts.className = "slot-acts";
+
+  const openLbl = document.createElement("label");
+  openLbl.className = "slot-act";
+  openLbl.title = "Open a .docx in this editor";
+  openLbl.textContent = "Open";
+  const fileIn = document.createElement("input");
+  fileIn.type = "file";
+  fileIn.accept =
+    ".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  fileIn.addEventListener("change", async () => {
+    const f = fileIn.files && fileIn.files[0];
+    if (!f) return;
+    const bytes = await f.arrayBuffer();
+    post(s, makeOpen(f.name, bytes.slice(0)));
+    fileIn.value = "";
+  });
+  openLbl.appendChild(fileIn);
+
+  const sampleAct = document.createElement("button");
+  sampleAct.className = "slot-act";
+  sampleAct.type = "button";
+  sampleAct.textContent = "Sample";
+  sampleAct.addEventListener("click", () => post(s, makeSample()));
+
+  const exportAct = document.createElement("button");
+  exportAct.className = "slot-act";
+  exportAct.type = "button";
+  exportAct.textContent = "Export ↓";
+  exportAct.addEventListener("click", () => post(s, makeExport()));
+
   const alone = document.createElement("a");
-  alone.className = "alone";
-  alone.textContent = "Open alone →";
+  alone.className = "slot-act alone";
+  alone.textContent = "Alone →";
   alone.target = "_blank";
   alone.rel = "noopener";
   alone.href = OPEN_DOCS_ORIGIN + "/e/" + s.slug;
 
-  head.append(select, lic, status, alone);
+  acts.append(openLbl, sampleAct, exportAct, alone);
+  head.append(select, lic, status, acts);
   el.appendChild(head);
 
   const body = document.createElement("div");
@@ -165,6 +217,7 @@ function mountSlot(s: Slot): void {
   s.licEl = lic;
   s.select = select;
   s.alone = alone;
+  s.fileInput = fileIn;
   s.frame = null;
   paintStatus(s);
   grid.appendChild(el);
@@ -186,6 +239,7 @@ function unmountSlot(s: Slot): void {
   s.licEl = null;
   s.select = null;
   s.alone = null;
+  s.fileInput = null;
   s.frame = null;
   s.ready = false;
   s.error = null;
@@ -269,7 +323,10 @@ addEventListener("message", (ev) => {
     paintStatus(slot);
   } else if (d.type === "opened") {
     slot.openedName = d.name;
+    slot.error = null;
     paintStatus(slot);
+  } else if (d.type === "exported") {
+    downloadDocx(d.name, d.bytes);
   }
 });
 

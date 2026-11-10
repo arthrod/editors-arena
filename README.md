@@ -27,16 +27,24 @@ different engines.
   `event.origin` is `https://open-docs.val.run` and `event.source` is one of the
   slot iframes; it posts to children with that same origin as `targetOrigin`.
   The file's bytes are read once and a fresh copy is posted into every slot.
+- Each editor's slot header is the only bar for that editor. Embed mode in
+  open-docs renders no chrome inside the iframe; Open, Sample, and Export for
+  one slot live in that slot's header.
 
-Protocol (open-docs embed mode, arthrod/open-docs issue 30):
+Protocol v2 (open-docs embed mode, see PROTOCOL2.md):
 
 ```
 child -> parent  {source:"open-docs", type:"ready", slug, name, startupMs?}
-                 {source:"open-docs", type:"error", slug, message}
+                 {source:"open-docs", type:"error", slug, message, during?: "mount"|"open"|"export"}
                  {source:"open-docs", type:"opened", slug, name}
+                 {source:"open-docs", type:"exported", slug, name, bytes: ArrayBuffer}
 parent -> child  {source:"editors-arena", type:"open", name, bytes: ArrayBuffer}
                  {source:"editors-arena", type:"sample"}
+                 {source:"editors-arena", type:"export"}
 ```
+
+`name` in `exported` is the document name without extension; the arena appends
+`.docx` on download.
 
 ## Engines
 
@@ -69,7 +77,7 @@ vt push
 ```
 main.http.ts        Hono app: GET / returns the page, /client/* serves modules
 client/arena.ts     slot grid, lazy iframes, message routing, URL state
-client/protocol.ts  pure helpers (parseState, isChildMessage, makeOpen)
+client/protocol.ts  pure helpers (parseState, isChildMessage, makeOpen, makeExport, ...)
 protocol_test.ts    Deno tests for the pure helpers
 engines.ts          the eight engines, copied from the open-docs registry
 styles.ts           the page's CSS as a string (benchmarks.law design system)
