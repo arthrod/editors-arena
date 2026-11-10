@@ -34,11 +34,13 @@ html{margin:0;padding:0}
 .st.is-ready{color:var(--ink);background:var(--mark);padding:1px 5px}
 .st.is-error{color:#fff;background:var(--del);padding:1px 5px}
 .slot-acts{display:flex;align-items:center;gap:4px;flex:0 0 auto;flex-shrink:0}
-.slot-act{position:relative;font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;color:var(--ink);border:1px solid var(--ink);border-radius:0;background:var(--surface);padding:3px 5px;cursor:pointer;display:inline-flex;align-items:center;white-space:nowrap;line-height:1.2}
-.slot-act:hover{background:var(--mark)}
-.slot-act input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0}
-.slot-act.alone{border-color:transparent;background:transparent;padding:3px 2px;background-image:linear-gradient(var(--mark),var(--mark));background-repeat:no-repeat;background-size:0% 42%;background-position:0 88%;transition:background-size .25s ease}
-.slot-act.alone:hover{background-color:transparent;background-size:100% 42%}
+.slot-menu{position:relative;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--ink);border:1px solid var(--ink);border-radius:0;background:var(--surface);padding:4px 9px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;line-height:1.2;transition:transform .18s ease,box-shadow .18s ease,background .18s ease}
+.slot-menu:hover{transform:translate(-1px,-1px);box-shadow:var(--lift);background:var(--mark)}
+.slot-menu:active{transform:none;box-shadow:none}
+.burger{display:inline-flex;flex-direction:column;gap:2px;flex-shrink:0}
+.burger i{display:block;width:12px;height:1.5px;background:var(--ink)}
+.slot-alone{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;flex-shrink:0;text-decoration:none;color:var(--ink);border:1px solid transparent;border-radius:0;background:transparent;transition:background .18s ease,border-color .18s ease}
+.slot-alone:hover{background:var(--mark);border-color:var(--ink)}
 @media (max-width:1299px){.lic{display:none}}
 @media (max-width:1199px){.slot-head{flex-wrap:wrap}}
 @media (max-width:820px){.slots{grid-template-columns:1fr}.slot{min-height:70vh}.slot-head{flex-wrap:wrap}}

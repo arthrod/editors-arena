@@ -3,8 +3,8 @@
  * No DOM access: every function here is unit-tested in protocol_test.ts.
  *
  * Embed protocol v2 (see PROTOCOL2.md):
- *   child -> parent: ready | error | opened | exported
- *   parent -> child: open | sample | export
+ *   child -> parent: ready | error | opened | exported | menu
+ *   parent -> child: open | sample | export | menu
  */
 import { engineSlugs } from "../engines.ts";
 
@@ -50,11 +50,18 @@ export interface ExportedMessage {
   name: string;
   bytes: ArrayBuffer;
 }
+export interface MenuMessage {
+  source: typeof CHILD_SOURCE;
+  type: "menu";
+  slug: string;
+  open: boolean;
+}
 export type ChildMessage =
   | ReadyMessage
   | ErrorMessage
   | OpenedMessage
-  | ExportedMessage;
+  | ExportedMessage
+  | MenuMessage;
 
 export interface OpenCommand {
   source: typeof PARENT_SOURCE;
@@ -70,7 +77,15 @@ export interface ExportCommand {
   source: typeof PARENT_SOURCE;
   type: "export";
 }
-export type ParentCommand = OpenCommand | SampleCommand | ExportCommand;
+export interface MenuCommand {
+  source: typeof PARENT_SOURCE;
+  type: "menu";
+}
+export type ParentCommand =
+  | OpenCommand
+  | SampleCommand
+  | ExportCommand
+  | MenuCommand;
 
 /**
  * Read the ?e= state: 2 or 3 comma-separated slugs.
@@ -106,7 +121,7 @@ export function serializeState(slugs: readonly string[]): string {
 }
 
 /** Shape-check a postMessage payload as a child -> parent message. */
-export function isChildMessage(data: unknown): data is ChildMessage {
+export function parseChildMessage(data: unknown): data is ChildMessage {
   if (data === null || typeof data !== "object") return false;
   const d = data as Record<string, unknown>;
   if (d.source !== CHILD_SOURCE) return false;
@@ -123,6 +138,8 @@ export function isChildMessage(data: unknown): data is ChildMessage {
       return typeof d.message === "string" &&
         (d.during === undefined ||
           d.during === "mount" || d.during === "open" || d.during === "export");
+    case "menu":
+      return typeof d.open === "boolean";
     default:
       return false;
   }
@@ -141,4 +158,9 @@ export function makeSample(): SampleCommand {
 /** Parent -> child: export the current document as .docx bytes. */
 export function makeExport(): ExportCommand {
   return { source: PARENT_SOURCE, type: "export" };
+}
+
+/** Parent -> child: toggle the embed menu inside this editor. */
+export function makeMenu(): MenuCommand {
+  return { source: PARENT_SOURCE, type: "menu" };
 }

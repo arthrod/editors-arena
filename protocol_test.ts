@@ -4,8 +4,9 @@ import {
   DEFAULT_SLUGS,
   OPEN_DOCS_ORIGIN,
   PARENT_SOURCE,
-  isChildMessage,
+  parseChildMessage,
   makeExport,
+  makeMenu,
   makeOpen,
   makeSample,
   parseState,
@@ -55,9 +56,9 @@ Deno.test("serializeState round-trips through parseState", () => {
   assertEquals(parseState(U(serializeState(slugs))), slugs);
 });
 
-Deno.test("isChildMessage accepts child message shapes including exported", () => {
+Deno.test("parseChildMessage accepts child message shapes including exported", () => {
   assert(
-    isChildMessage({
+    parseChildMessage({
       source: "open-docs",
       type: "ready",
       slug: "superdoc",
@@ -65,7 +66,7 @@ Deno.test("isChildMessage accepts child message shapes including exported", () =
     }),
   );
   assert(
-    isChildMessage({
+    parseChildMessage({
       source: "open-docs",
       type: "ready",
       slug: "s",
@@ -74,10 +75,10 @@ Deno.test("isChildMessage accepts child message shapes including exported", () =
     }),
   );
   assert(
-    isChildMessage({ source: "open-docs", type: "error", slug: "s", message: "boom" }),
+    parseChildMessage({ source: "open-docs", type: "error", slug: "s", message: "boom" }),
   );
   assert(
-    isChildMessage({
+    parseChildMessage({
       source: "open-docs",
       type: "error",
       slug: "s",
@@ -86,11 +87,11 @@ Deno.test("isChildMessage accepts child message shapes including exported", () =
     }),
   );
   assert(
-    isChildMessage({ source: "open-docs", type: "opened", slug: "s", name: "memo.docx" }),
+    parseChildMessage({ source: "open-docs", type: "opened", slug: "s", name: "memo.docx" }),
   );
   const expBytes = new Uint8Array([80, 75]).buffer;
   assert(
-    isChildMessage({
+    parseChildMessage({
       source: "open-docs",
       type: "exported",
       slug: "s",
@@ -98,13 +99,29 @@ Deno.test("isChildMessage accepts child message shapes including exported", () =
       bytes: expBytes,
     }),
   );
+  assert(
+    parseChildMessage({
+      source: "open-docs",
+      type: "menu",
+      slug: "s",
+      open: true,
+    }),
+  );
+  assert(
+    parseChildMessage({
+      source: "open-docs",
+      type: "menu",
+      slug: "s",
+      open: false,
+    }),
+  );
 });
 
-Deno.test("isChildMessage rejects anything else", () => {
-  assertEquals(isChildMessage(null), false);
-  assertEquals(isChildMessage("open-docs"), false);
+Deno.test("parseChildMessage rejects anything else", () => {
+  assertEquals(parseChildMessage(null), false);
+  assertEquals(parseChildMessage("open-docs"), false);
   assertEquals(
-    isChildMessage({
+    parseChildMessage({
       source: "editors-arena",
       type: "open",
       name: "x",
@@ -113,11 +130,11 @@ Deno.test("isChildMessage rejects anything else", () => {
     false,
   );
   // missing fields per type
-  assertEquals(isChildMessage({ source: "open-docs", type: "ready", slug: "s" }), false);
-  assertEquals(isChildMessage({ source: "open-docs", type: "error", slug: "s" }), false);
-  assertEquals(isChildMessage({ source: "open-docs", type: "opened", slug: "s" }), false);
+  assertEquals(parseChildMessage({ source: "open-docs", type: "ready", slug: "s" }), false);
+  assertEquals(parseChildMessage({ source: "open-docs", type: "error", slug: "s" }), false);
+  assertEquals(parseChildMessage({ source: "open-docs", type: "opened", slug: "s" }), false);
   assertEquals(
-    isChildMessage({
+    parseChildMessage({
       source: "open-docs",
       type: "exported",
       slug: "s",
@@ -126,7 +143,7 @@ Deno.test("isChildMessage rejects anything else", () => {
     false,
   );
   assertEquals(
-    isChildMessage({
+    parseChildMessage({
       source: "open-docs",
       type: "exported",
       slug: "s",
@@ -136,7 +153,7 @@ Deno.test("isChildMessage rejects anything else", () => {
     false,
   );
   assertEquals(
-    isChildMessage({
+    parseChildMessage({
       source: "open-docs",
       type: "error",
       slug: "s",
@@ -145,11 +162,11 @@ Deno.test("isChildMessage rejects anything else", () => {
     }),
     false,
   );
-  assertEquals(isChildMessage({ source: "open-docs", type: "ready", name: "n" }), false);
+  assertEquals(parseChildMessage({ source: "open-docs", type: "ready", name: "n" }), false);
   // unknown type, bad startupMs
-  assertEquals(isChildMessage({ source: "open-docs", type: "mystery", slug: "s" }), false);
+  assertEquals(parseChildMessage({ source: "open-docs", type: "mystery", slug: "s" }), false);
   assertEquals(
-    isChildMessage({
+    parseChildMessage({
       source: "open-docs",
       type: "ready",
       slug: "s",
@@ -158,9 +175,17 @@ Deno.test("isChildMessage rejects anything else", () => {
     }),
     false,
   );
+  assertEquals(
+    parseChildMessage({ source: "open-docs", type: "menu", slug: "s" }),
+    false,
+  );
+  assertEquals(
+    parseChildMessage({ source: "open-docs", type: "menu", slug: "s", open: "yes" }),
+    false,
+  );
 });
 
-Deno.test("makeOpen, makeSample, and makeExport build parent messages", () => {
+Deno.test("makeOpen, makeSample, makeExport, and makeMenu build parent messages", () => {
   const bytes = new Uint8Array([1, 2, 3]).buffer;
   const open = makeOpen("memo.docx", bytes);
   assertEquals(open.source, PARENT_SOURCE);
@@ -173,6 +198,9 @@ Deno.test("makeOpen, makeSample, and makeExport build parent messages", () => {
   const exp = makeExport();
   assertEquals(exp.source, PARENT_SOURCE);
   assertEquals(exp.type, "export");
+  const menu = makeMenu();
+  assertEquals(menu.source, PARENT_SOURCE);
+  assertEquals(menu.type, "menu");
   assertEquals(CHILD_SOURCE, "open-docs");
   assertEquals(OPEN_DOCS_ORIGIN, "https://open-docs.val.run");
   assertEquals(DEFAULT_SLUGS, ["superdoc", "eigenpal", "docxodus"]);

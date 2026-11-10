@@ -28,8 +28,11 @@ different engines.
   slot iframes; it posts to children with that same origin as `targetOrigin`.
   The file's bytes are read once and a fresh copy is posted into every slot.
 - Each editor's slot header is the only bar for that editor. Embed mode in
-  open-docs renders no chrome inside the iframe; Open, Sample, and Export for
-  one slot live in that slot's header.
+  open-docs renders no chrome inside the iframe; per-slot **SAMPLE** (loads the
+  rich sample in that slot only), **MENU** (toggles the
+  editor's own menu inside the iframe) and an arrows-out icon (open that engine
+  alone in a new tab) sit on the right. Global **Open .docx in all** and
+  **Sample in all** stay in the top bar.
 
 Protocol v2 (open-docs embed mode, see PROTOCOL2.md):
 
@@ -38,9 +41,11 @@ child -> parent  {source:"open-docs", type:"ready", slug, name, startupMs?}
                  {source:"open-docs", type:"error", slug, message, during?: "mount"|"open"|"export"}
                  {source:"open-docs", type:"opened", slug, name}
                  {source:"open-docs", type:"exported", slug, name, bytes: ArrayBuffer}
+                 {source:"open-docs", type:"menu", slug, open: boolean}
 parent -> child  {source:"editors-arena", type:"open", name, bytes: ArrayBuffer}
                  {source:"editors-arena", type:"sample"}
                  {source:"editors-arena", type:"export"}
+                 {source:"editors-arena", type:"menu"}
 ```
 
 `name` in `exported` is the document name without extension; the arena appends
@@ -77,7 +82,7 @@ vt push
 ```
 main.http.ts        Hono app: GET / returns the page, /client/* serves modules
 client/arena.ts     slot grid, lazy iframes, message routing, URL state
-client/protocol.ts  pure helpers (parseState, isChildMessage, makeOpen, makeExport, ...)
+client/protocol.ts  pure helpers (parseState, parseChildMessage, makeOpen, makeMenu, ...)
 protocol_test.ts    Deno tests for the pure helpers
 engines.ts          the eight engines, copied from the open-docs registry
 styles.ts           the page's CSS as a string (benchmarks.law design system)

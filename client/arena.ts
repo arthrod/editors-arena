@@ -5,10 +5,11 @@
 import { engines, getEngine } from "../engines.ts";
 import {
   DEFAULT_SLUGS,
-  isChildMessage,
   makeExport,
+  makeMenu,
   makeOpen,
   makeSample,
+  parseChildMessage,
   MAX_SLOTS,
   OPEN_DOCS_ORIGIN,
   type ParentCommand,
@@ -25,7 +26,7 @@ interface Slot {
   licEl: HTMLElement | null;
   select: HTMLSelectElement | null;
   alone: HTMLAnchorElement | null;
-  fileInput: HTMLInputElement | null;
+  menuBtn: HTMLButtonElement | null;
   frame: HTMLIFrameElement | null;
   ready: boolean;
   error: string | null;
@@ -55,7 +56,7 @@ for (let i = 0; i < MAX_SLOTS; i++) {
     licEl: null,
     select: null,
     alone: null,
-    fileInput: null,
+    menuBtn: null,
     frame: null,
     ready: false,
     error: null,
@@ -127,6 +128,7 @@ function mountFrame(s: Slot): void {
   frame.src = OPEN_DOCS_ORIGIN + "/e/" + s.slug + "?embed=1";
   s.body.replaceChildren(frame);
   s.frame = frame;
+  s.menuBtn?.setAttribute("aria-expanded", "false");
   paintStatus(s);
 }
 
@@ -163,43 +165,45 @@ function mountSlot(s: Slot): void {
   const acts = document.createElement("div");
   acts.className = "slot-acts";
 
-  const openLbl = document.createElement("label");
-  openLbl.className = "slot-act";
-  openLbl.title = "Open a .docx in this editor";
-  openLbl.textContent = "Open";
-  const fileIn = document.createElement("input");
-  fileIn.type = "file";
-  fileIn.accept =
-    ".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-  fileIn.addEventListener("change", async () => {
-    const f = fileIn.files && fileIn.files[0];
-    if (!f) return;
-    const bytes = await f.arrayBuffer();
-    post(s, makeOpen(f.name, bytes.slice(0)));
-    fileIn.value = "";
-  });
-  openLbl.appendChild(fileIn);
+  const sampleBtn = document.createElement("button");
+  sampleBtn.className = "slot-menu slot-sample";
+  sampleBtn.type = "button";
+  sampleBtn.title = "Load the rich sample in this editor";
+  sampleBtn.textContent = "SAMPLE";
+  sampleBtn.addEventListener("click", () => post(s, makeSample()));
 
-  const sampleAct = document.createElement("button");
-  sampleAct.className = "slot-act";
-  sampleAct.type = "button";
-  sampleAct.textContent = "Sample";
-  sampleAct.addEventListener("click", () => post(s, makeSample()));
+  const menuBtn = document.createElement("button");
+  menuBtn.className = "slot-menu";
+  menuBtn.type = "button";
+  menuBtn.setAttribute("aria-haspopup", "menu");
+  menuBtn.setAttribute("aria-expanded", "false");
+  menuBtn.title = "Menu of this editor";
+  const burger = document.createElement("span");
+  burger.className = "burger";
+  burger.setAttribute("aria-hidden", "true");
+  for (let i = 0; i < 3; i++) {
+    const bar = document.createElement("i");
+    burger.appendChild(bar);
+  }
+  menuBtn.append(burger, document.createTextNode("MENU"));
+  menuBtn.addEventListener("click", () => postMenu(s));
 
-  const exportAct = document.createElement("button");
-  exportAct.className = "slot-act";
-  exportAct.type = "button";
-  exportAct.textContent = "Export ↓";
-  exportAct.addEventListener("click", () => post(s, makeExport()));
-
+  const engName = eng ? eng.name : s.slug;
   const alone = document.createElement("a");
-  alone.className = "slot-act alone";
-  alone.textContent = "Alone →";
+  alone.className = "slot-alone";
   alone.target = "_blank";
   alone.rel = "noopener";
   alone.href = OPEN_DOCS_ORIGIN + "/e/" + s.slug;
+  alone.setAttribute("aria-label", "Open " + engName + " alone in a new tab");
+  alone.title = "Open alone in a new tab";
+  const aloneIcon = document.createElement("img");
+  aloneIcon.src = "/client/arrows-out.svg";
+  aloneIcon.alt = "";
+  aloneIcon.width = 16;
+  aloneIcon.height = 16;
+  alone.appendChild(aloneIcon);
 
-  acts.append(openLbl, sampleAct, exportAct, alone);
+  acts.append(sampleBtn, menuBtn, alone);
   head.append(select, lic, status, acts);
   el.appendChild(head);
 
@@ -217,7 +221,7 @@ function mountSlot(s: Slot): void {
   s.licEl = lic;
   s.select = select;
   s.alone = alone;
-  s.fileInput = fileIn;
+  s.menuBtn = menuBtn;
   s.frame = null;
   paintStatus(s);
   grid.appendChild(el);
@@ -239,7 +243,7 @@ function unmountSlot(s: Slot): void {
   s.licEl = null;
   s.select = null;
   s.alone = null;
-  s.fileInput = null;
+  s.menuBtn = null;
   s.frame = null;
   s.ready = false;
   s.error = null;
@@ -255,7 +259,11 @@ function setEngine(s: Slot, slug: string): void {
     s.licEl.textContent = eng ? eng.license : "?";
     if (eng) s.licEl.title = eng.repo;
   }
-  if (s.alone) s.alone.href = OPEN_DOCS_ORIGIN + "/e/" + slug;
+  const name = eng ? eng.name : slug;
+  if (s.alone) {
+    s.alone.href = OPEN_DOCS_ORIGIN + "/e/" + slug;
+    s.alone.setAttribute("aria-label", "Open " + name + " alone in a new tab");
+  }
   if (s.select) s.select.value = slug;
   if (s.frame) mountFrame(s); // replaces only this slot's iframe
   else paintStatus(s);
@@ -307,10 +315,18 @@ function post(s: Slot, msg: ParentCommand): void {
   flush(s);
 }
 
+/** Toggle the child embed menu; posts immediately once the iframe exists. */
+function postMenu(s: Slot): void {
+  const msg = makeMenu();
+  const cw = s.frame?.contentWindow;
+  if (cw) cw.postMessage(msg, OPEN_DOCS_ORIGIN);
+  else s.queue.push(msg);
+}
+
 addEventListener("message", (ev) => {
   if (ev.origin !== OPEN_DOCS_ORIGIN) return;
   const slot = slotByWindow(ev.source);
-  if (!slot || !isChildMessage(ev.data)) return;
+  if (!slot || !parseChildMessage(ev.data)) return;
   const d = ev.data;
   if (d.type === "ready") {
     slot.ready = true;
@@ -327,6 +343,8 @@ addEventListener("message", (ev) => {
     paintStatus(slot);
   } else if (d.type === "exported") {
     downloadDocx(d.name, d.bytes);
+  } else if (d.type === "menu") {
+    if (slot.menuBtn) slot.menuBtn.setAttribute("aria-expanded", String(d.open));
   }
 });
 
