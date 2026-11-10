@@ -25,7 +25,7 @@ html{margin:0;padding:0}
 .go{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);text-decoration:none;white-space:nowrap;background-image:linear-gradient(var(--mark),var(--mark));background-repeat:no-repeat;background-size:0% 42%;background-position:0 88%;transition:background-size .25s ease;padding-bottom:2px}
 .go:hover{background-size:100% 42%}
 .slots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:14px;min-height:calc(100vh - var(--top-h))}
-.slots[data-cols=3]{grid-template-columns:repeat(3,minmax(0,1fr))}
+.slots[data-cols="3"]{grid-template-columns:repeat(3,minmax(0,1fr))}
 .slot{display:flex;flex-direction:column;min-width:0;min-height:0;border:1px solid var(--ink);background:var(--surface)}
 .slot-head{display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid var(--ink);background:var(--bg);flex-wrap:wrap}
 .engine-select{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ink);background:var(--surface);border:1px solid var(--ink);border-radius:0;padding:5px 8px;cursor:pointer;max-width:190px}

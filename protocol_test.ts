@@ -125,3 +125,9 @@ Deno.test("makeOpen and makeSample build parent messages", () => {
   assertEquals(OPEN_DOCS_ORIGIN, "https://open-docs.val.run");
   assertEquals(DEFAULT_SLUGS, ["superdoc", "eigenpal", "docxodus"]);
 });
+
+Deno.test("styles: attribute selectors with numeric values are quoted (unquoted digits are invalid CSS)", async () => {
+  const { CSS } = await import("./styles.ts");
+  const bad = CSS.match(/\[[a-z-]+=\d[^\]]*\]/g);
+  if (bad) throw new Error(`unquoted numeric attribute selectors: ${bad.join(", ")}`);
+});

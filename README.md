@@ -60,9 +60,7 @@ canvas-editor, not a separate engine).
 ```
 vt clone https://www.val.town/x/arthrod/editors-arena
 deno test -A
-deno check .                                        # local files
-deno check --no-config --allow-import main.http.ts  # the Hono entry: its esm.town
-                                                    # import needs remote access
+deno check --allow-import main.http.ts client/arena.ts
 vt push
 ```
 
@@ -78,9 +76,7 @@ styles.ts           the page's CSS as a string (benchmarks.law design system)
 valtown.d.ts        local copy of the Val Town ambient types
 ```
 
-`deno.json` excludes `main.http.ts` from bare `deno check`/`deno lint`: it
-imports `https://esm.town`, and Deno 2.9 gates remote specifiers behind
-`--allow-import`. Check it with the flag when it changes; on Val Town the remote
-module resolves at runtime.
+`main.http.ts` imports `https://esm.town`, and Deno 2.9 gates remote
+specifiers behind `--allow-import`, hence the flag.
 
 MIT license.
