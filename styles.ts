@@ -41,9 +41,13 @@ html{margin:0;padding:0}
 .burger i{display:block;width:12px;height:1.5px;background:var(--ink)}
 .slot-alone{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;flex-shrink:0;text-decoration:none;color:var(--ink);border:1px solid transparent;border-radius:0;background:transparent;transition:background .18s ease,border-color .18s ease}
 .slot-alone:hover{background:var(--mark);border-color:var(--ink)}
+.engine-pick{display:contents}
+.engine-pick img{display:none}
 @media (max-width:1299px){.lic{display:none}}
 @media (max-width:1199px){.slot-head{flex-wrap:wrap}}
 @media (max-width:820px){.slots{grid-template-columns:1fr}.slot{min-height:70vh}.slot-head{flex-wrap:wrap}}
+/* Phones: the engine dropdown is a boxed numpad icon (the native select sits over it, transparent) and MENU is the boxed burger alone. */
+@media (max-width:760px){.slot-head{flex-wrap:nowrap}.engine-pick{display:inline-flex;position:relative;align-items:center;justify-content:center;width:30px;height:30px;flex:none;border:1px solid var(--ink);background:var(--surface);cursor:pointer}.engine-pick img{display:block}.engine-pick .engine-select{position:absolute;inset:0;width:100%;height:100%;min-width:0;max-width:none;opacity:0;cursor:pointer}.engine-pick:hover{background:var(--mark)}.slot-menu .lbl{display:none}.slot-menu:not(.slot-sample){width:30px;height:30px;padding:0;justify-content:center}}
 .slot-body{position:relative;flex:1;min-height:0}
 .frame{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:var(--surface)}
 .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:var(--surface)}

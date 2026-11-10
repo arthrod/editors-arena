@@ -153,6 +153,17 @@ function mountSlot(s: Slot): void {
   }
   select.value = s.slug;
   select.addEventListener("change", () => setEngine(s, select.value));
+  // On phones the dropdown collapses to a boxed numpad icon; the native
+  // select sits over it (transparent), so a tap opens the platform picker.
+  const pick = document.createElement("label");
+  pick.className = "engine-pick";
+  pick.title = "Switch editor";
+  const pickIcon = document.createElement("img");
+  pickIcon.src = "/client/numpad.svg";
+  pickIcon.alt = "";
+  pickIcon.width = 16;
+  pickIcon.height = 16;
+  pick.append(pickIcon, select);
 
   const lic = document.createElement("span");
   lic.className = "lic";
@@ -185,7 +196,11 @@ function mountSlot(s: Slot): void {
     const bar = document.createElement("i");
     burger.appendChild(bar);
   }
-  menuBtn.append(burger, document.createTextNode("MENU"));
+  const menuLbl = document.createElement("span");
+  menuLbl.className = "lbl";
+  menuLbl.textContent = "MENU";
+  menuBtn.setAttribute("aria-label", "Menu");
+  menuBtn.append(burger, menuLbl);
   menuBtn.addEventListener("click", () => postMenu(s));
 
   const engName = eng ? eng.name : s.slug;
@@ -204,7 +219,7 @@ function mountSlot(s: Slot): void {
   alone.appendChild(aloneIcon);
 
   acts.append(sampleBtn, menuBtn, alone);
-  head.append(select, lic, status, acts);
+  head.append(pick, lic, status, acts);
   el.appendChild(head);
 
   const body = document.createElement("div");
