@@ -22,16 +22,37 @@ const PAGE = `<!doctype html>
 <style>${CSS}</style>
 </head>
 <body class="arena">
-<header class="top">
-  <a class="wm" href="/">Editors Arena</a>
-  <span class="colswitch" role="group" aria-label="Columns">
-    <button type="button" data-cols="2">2</button><span class="sep">·</span><button type="button" data-cols="3">3</button>
+<header class="site-nav od-bar">
+  <a class="wm" href="/" title="Editors Arena">
+    <span class="logo"><span class="del">CHILL</span><span class="ins">NEUROTIC</span></span><span class="dot">.</span>DOCX<span class="dot">.</span>BENCH
+  </a>
+  <span class="crumb">/ arena</span>
+  <span class="od-spacer"></span>
+  <span class="colswitch arena-bar-cols" role="group" aria-label="Columns">
+    <button type="button" id="arena-cols-2" data-cols="2">2</button><span class="sep">·</span><button type="button" id="arena-cols-3" data-cols="3">3</button>
   </span>
-  <nav class="acts">
-    <label class="act primary" title="Open a .docx in every editor">Open .docx in all<input id="file" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"></label>
-    <button id="sample" class="act" type="button">Sample in all</button>
-    <a class="go" href="https://open-docs.val.run" target="_blank" rel="noopener">open-docs →</a>
-  </nav>
+  <label class="od-btn primary arena-bar-open" id="arena-open-wrap" title="Open a .docx in every editor">Open .docx in all<input id="arena-file" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden></label>
+  <button id="arena-sample" class="od-btn arena-bar-sample" type="button">Sample in all</button>
+  <div class="od-menu-wrap">
+    <button class="od-btn od-menu-btn" id="arena-more" type="button" title="Menu" aria-haspopup="menu" aria-expanded="false" aria-controls="arena-menu">
+      <span class="od-burger" aria-hidden="true"><i></i><i></i><i></i></span><span class="arena-menu-lbl">MENU</span>
+    </button>
+    <div class="od-menu" id="arena-menu" role="menu" hidden>
+      <div class="od-menu-label"><span class="sq" aria-hidden="true"></span> / Document</div>
+      <button type="button" role="menuitem" id="arena-menu-open">Open .docx in all</button>
+      <button type="button" role="menuitem" id="arena-menu-sample">Sample in all</button>
+      <hr>
+      <div class="od-menu-label"><span class="sq" aria-hidden="true"></span> / Layout</div>
+      <button type="button" role="menuitem" id="arena-menu-cols-2">2 columns</button>
+      <button type="button" role="menuitem" id="arena-menu-cols-3">3 columns</button>
+      <hr>
+      <div class="od-menu-label"><span class="sq" aria-hidden="true"></span> / Links</div>
+      <a role="menuitem" id="arena-menu-editors" href="https://open-docs.val.run" target="_blank" rel="noopener">open-docs editors →</a>
+      <a role="menuitem" id="arena-menu-viewers" href="https://open-docs.val.run/#viewers" target="_blank" rel="noopener">Viewers →</a>
+      <a role="menuitem" id="arena-menu-od-repo" href="https://github.com/arthrod/open-docs" target="_blank" rel="noopener">open-docs repo →</a>
+      <a role="menuitem" id="arena-menu-arena-repo" href="https://github.com/arthrod/editors-arena" target="_blank" rel="noopener">editors-arena repo →</a>
+    </div>
+  </div>
 </header>
 <main id="grid" class="slots" data-cols="2"></main>
 <footer class="foot">

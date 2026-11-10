@@ -37,10 +37,34 @@ interface Slot {
 
 const grid = document.getElementById("grid") as HTMLElement;
 const colBtns = Array.from(
-  document.querySelectorAll<HTMLButtonElement>(".colswitch button"),
+  document.querySelectorAll<HTMLButtonElement>(
+    "#arena-cols-2, #arena-cols-3",
+  ),
 );
-const fileInput = document.getElementById("file") as HTMLInputElement;
-const sampleBtn = document.getElementById("sample") as HTMLButtonElement;
+const fileInput = document.getElementById("arena-file") as HTMLInputElement;
+const sampleBtn = document.getElementById("arena-sample") as HTMLButtonElement;
+const arenaMenu = document.getElementById("arena-menu") as HTMLDivElement;
+const arenaMore = document.getElementById("arena-more") as HTMLButtonElement;
+const menuOpenBtn = document.getElementById("arena-menu-open") as HTMLButtonElement;
+const menuSampleBtn = document.getElementById("arena-menu-sample") as HTMLButtonElement;
+const menuCol2 = document.getElementById("arena-menu-cols-2") as HTMLButtonElement;
+const menuCol3 = document.getElementById("arena-menu-cols-3") as HTMLButtonElement;
+
+function openArenaMenu(): void {
+  if (!arenaMenu || !arenaMenu.hidden) return;
+  arenaMenu.hidden = false;
+  arenaMore?.setAttribute("aria-expanded", "true");
+}
+
+function closeArenaMenu(): void {
+  if (!arenaMenu) return;
+  arenaMenu.hidden = true;
+  arenaMore?.setAttribute("aria-expanded", "false");
+}
+
+function runSampleAll(): void {
+  for (const s of slots) post(s, makeSample());
+}
 
 const initial = parseState(location.href);
 let cols = initial.length; // 2 or 3
@@ -373,12 +397,36 @@ fileInput.addEventListener("change", async () => {
   fileInput.value = "";
 });
 
-sampleBtn.addEventListener("click", () => {
-  for (const s of slots) post(s, makeSample());
-});
+sampleBtn.addEventListener("click", () => runSampleAll());
 
 for (const b of colBtns) {
   b.addEventListener("click", () => setCols(Number(b.dataset.cols)));
 }
+
+menuOpenBtn?.addEventListener("click", () => fileInput?.click());
+menuSampleBtn?.addEventListener("click", () => runSampleAll());
+menuCol2?.addEventListener("click", () => setCols(2));
+menuCol3?.addEventListener("click", () => setCols(3));
+
+arenaMore?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (arenaMenu?.hidden) openArenaMenu();
+  else closeArenaMenu();
+});
+document.addEventListener("click", (e) => {
+  if (arenaMenu && !arenaMenu.hidden && !arenaMenu.contains(e.target as Node) &&
+    !(e.target as HTMLElement).closest("#arena-more")) {
+    closeArenaMenu();
+  }
+});
+arenaMenu?.addEventListener("click", (e) => {
+  if ((e.target as HTMLElement).closest("button, a")) closeArenaMenu();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && arenaMenu && !arenaMenu.hidden) {
+    closeArenaMenu();
+    arenaMore?.focus();
+  }
+});
 
 render();
