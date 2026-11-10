@@ -1,0 +1,118 @@
+/**
+ * Pure helpers for the editors-arena postMessage protocol and URL state.
+ * No DOM access: every function here is unit-tested in protocol_test.ts.
+ *
+ * The embed-mode contract (open-docs issue #30):
+ *   child -> parent: {source:"open-docs", type:"ready"|"error"|"opened", ...}
+ *   parent -> child: {source:"editors-arena", type:"open", name, bytes}
+ *                  | {source:"editors-arena", type:"sample"}
+ */
+import { engineSlugs } from "../engines.ts";
+
+/** The only origin a child message is accepted from, and the only
+ * targetOrigin the parent posts to. */
+export const OPEN_DOCS_ORIGIN = "https://open-docs.val.run";
+
+export const CHILD_SOURCE = "open-docs";
+export const PARENT_SOURCE = "editors-arena";
+
+/** Default engines per slot: slot 1, slot 2, slot 3. */
+export const DEFAULT_SLUGS = ["superdoc", "eigenpal", "docxodus"] as const;
+
+export const MIN_SLOTS = 2;
+export const MAX_SLOTS = 3;
+
+export interface ReadyMessage {
+  source: typeof CHILD_SOURCE;
+  type: "ready";
+  slug: string;
+  name: string;
+  startupMs?: number;
+}
+export interface ErrorMessage {
+  source: typeof CHILD_SOURCE;
+  type: "error";
+  slug: string;
+  message: string;
+}
+export interface OpenedMessage {
+  source: typeof CHILD_SOURCE;
+  type: "opened";
+  slug: string;
+  name: string;
+}
+export type ChildMessage = ReadyMessage | ErrorMessage | OpenedMessage;
+
+export interface OpenCommand {
+  source: typeof PARENT_SOURCE;
+  type: "open";
+  name: string;
+  bytes: ArrayBuffer;
+}
+export interface SampleCommand {
+  source: typeof PARENT_SOURCE;
+  type: "sample";
+}
+export type ParentCommand = OpenCommand | SampleCommand;
+
+/**
+ * Read the ?e= state: 2 or 3 comma-separated slugs.
+ *
+ * - missing e -> first two defaults
+ * - a slug that is not in validSlugs falls back to the default for its
+ *   position (duplicates are allowed, per the UI)
+ * - more than three slugs -> first three
+ * - fewer than two -> padded with defaults
+ */
+export function parseState(
+  url: string | URL,
+  validSlugs: readonly string[] = engineSlugs,
+): string[] {
+  const u = typeof url === "string" ? new URL(url, "https://editors-arena.val.run") : url;
+  const raw = u.searchParams.get("e");
+  const slugs: string[] = raw === null
+    ? DEFAULT_SLUGS.slice(0, MIN_SLOTS)
+    : raw
+      .split(",")
+      .slice(0, MAX_SLOTS)
+      .map((s, i) => {
+        const slug = s.trim();
+        return validSlugs.includes(slug) ? slug : DEFAULT_SLUGS[i] ?? DEFAULT_SLUGS[0];
+      });
+  while (slugs.length < MIN_SLOTS) slugs.push(DEFAULT_SLUGS[slugs.length]);
+  return slugs;
+}
+
+/** ["a","b"] -> "?e=a,b" — appended to the path via history.replaceState. */
+export function serializeState(slugs: readonly string[]): string {
+  return "?e=" + slugs.join(",");
+}
+
+/** Shape-check a postMessage payload as a child -> parent message. */
+export function isChildMessage(data: unknown): data is ChildMessage {
+  if (data === null || typeof data !== "object") return false;
+  const d = data as Record<string, unknown>;
+  if (d.source !== CHILD_SOURCE) return false;
+  if (typeof d.slug !== "string") return false;
+  switch (d.type) {
+    case "ready":
+      return typeof d.name === "string" &&
+        (d.startupMs === undefined || typeof d.startupMs === "number");
+    case "opened":
+      return typeof d.name === "string";
+    case "error":
+      return typeof d.message === "string";
+    default:
+      return false;
+  }
+}
+
+/** Parent -> child: open these .docx bytes under this file name. */
+export function makeOpen(name: string, bytes: ArrayBuffer): OpenCommand {
+  return { source: PARENT_SOURCE, type: "open", name, bytes };
+}
+
+/** Parent -> child: open the built-in sample document. */
+export function makeSample(): SampleCommand {
+  return { source: PARENT_SOURCE, type: "sample" };
+}
