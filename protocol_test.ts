@@ -13,7 +13,7 @@ import {
   serializeState,
 } from "./client/protocol.ts";
 
-const U = (q: string) => "https://editors-arena.val.run/" + q;
+const U = (q: string) => "https://arena.benchmarks.law/" + q;
 
 Deno.test("parseState: no e param -> two defaults", () => {
   assertEquals(parseState(U("")), ["superdoc", "eigenpal"]);
@@ -202,7 +202,7 @@ Deno.test("makeOpen, makeSample, makeExport, and makeMenu build parent messages"
   assertEquals(menu.source, PARENT_SOURCE);
   assertEquals(menu.type, "menu");
   assertEquals(CHILD_SOURCE, "open-docs");
-  assertEquals(OPEN_DOCS_ORIGIN, "https://open-docs.val.run");
+  assertEquals(OPEN_DOCS_ORIGIN, "https://editors.benchmarks.law");
   assertEquals(DEFAULT_SLUGS, ["superdoc", "eigenpal", "docxodus"]);
 });
 

@@ -1,15 +1,15 @@
 # editors-arena
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-0A0A0A.svg)](LICENSE)
-[![Val Town](https://img.shields.io/badge/val_town-editors--arena-FFD400.svg)](https://editors-arena.val.run)
+[![Val Town](https://img.shields.io/badge/val_town-editors--arena-FFD400.svg)](https://arena.benchmarks.law)
 
 Two or three open-source DOCX editors on the same document, side by side. Live
-at https://editors-arena.val.run.
+at https://arena.benchmarks.law.
 
 ## What it is
 
 One page, two or three slots. Each slot holds one DOCX editor in an iframe,
-running unmodified from [open-docs](https://open-docs.val.run) in embed mode at
+running unmodified from [open-docs](https://editors.benchmarks.law) in embed mode at
 `/e/<slug>?embed=1`: no assistant, just the engine. Pick an engine per slot,
 open one .docx in all of them, and compare what the same file looks like under
 different engines.
@@ -24,7 +24,7 @@ different engines.
   and is updated with `history.replaceState`, so links are shareable. Invalid
   slugs fall back to defaults.
 - Parent and child talk over postMessage. The parent accepts a message only when
-  `event.origin` is `https://open-docs.val.run` and `event.source` is one of the
+  `event.origin` is `https://editors.benchmarks.law` and `event.source` is one of the
   slot iframes; it posts to children with that same origin as `targetOrigin`.
   The file's bytes are read once and a fresh copy is posted into every slot.
 - Each editor's slot header is the only bar for that editor. Embed mode in

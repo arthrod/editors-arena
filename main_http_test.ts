@@ -22,7 +22,7 @@ const HANDLER_IDS = [
 
 async function getHtml(): Promise<string> {
   if (fetchPage === "1") {
-    const res = await fetch("https://editors-arena.val.run/", { redirect: "follow" });
+    const res = await fetch("https://arena.benchmarks.law/", { redirect: "follow" });
     return await res.text();
   }
   const app = (await import("./main.http.ts")).default;

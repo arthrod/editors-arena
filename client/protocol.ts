@@ -10,7 +10,7 @@ import { engineSlugs } from "../engines.ts";
 
 /** The only origin a child message is accepted from, and the only
  * targetOrigin the parent posts to. */
-export const OPEN_DOCS_ORIGIN = "https://open-docs.val.run";
+export const OPEN_DOCS_ORIGIN = "https://editors.benchmarks.law";
 
 export const CHILD_SOURCE = "open-docs";
 export const PARENT_SOURCE = "editors-arena";
@@ -100,7 +100,7 @@ export function parseState(
   url: string | URL,
   validSlugs: readonly string[] = engineSlugs,
 ): string[] {
-  const u = typeof url === "string" ? new URL(url, "https://editors-arena.val.run") : url;
+  const u = typeof url === "string" ? new URL(url, "https://arena.benchmarks.law") : url;
   const raw = u.searchParams.get("e");
   const slugs: string[] = raw === null
     ? DEFAULT_SLUGS.slice(0, MIN_SLOTS)

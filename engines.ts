@@ -8,7 +8,7 @@
  * separate engine.
  */
 export interface EngineMeta {
-  /** URL segment: https://open-docs.val.run/e/<slug> */
+  /** URL segment: https://editors.benchmarks.law/e/<slug> */
   slug: string;
   name: string;
   license: string;
