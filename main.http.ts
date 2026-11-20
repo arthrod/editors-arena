@@ -7,7 +7,9 @@
  * /engines.ts serves the engine list the client imports.
  */
 import { Hono } from "npm:hono@4";
-import { serveFile } from "https://esm.town/v/std/utils/index.ts";
+// The one file, not the index: the index also loads std/utils/test.tsx, whose preact import
+// does not resolve under a local Deno (three page tests failed on it).
+import { serveFile } from "https://esm.town/v/std/utils/serve-file.ts";
 import { CSS } from "./styles.ts";
 
 const app = new Hono();
