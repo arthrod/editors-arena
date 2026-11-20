@@ -51,6 +51,7 @@ const PAGE = `<!doctype html>
       <div class="od-menu-label"><span class="sq" aria-hidden="true"></span> / Links</div>
       <a role="menuitem" id="arena-menu-editors" href="https://editors.benchmarks.law" target="_blank" rel="noopener">Editors →</a>
       <a role="menuitem" id="arena-menu-viewers" href="https://viewers.benchmarks.law" target="_blank" rel="noopener">Viewers →</a>
+      <a role="menuitem" id="arena-menu-blog" href="https://editors.benchmarks.law/blog" target="_blank" rel="noopener">Blog →</a>
       <a role="menuitem" id="arena-menu-od-repo" href="https://github.com/arthrod/open-docs" target="_blank" rel="noopener">open-docs repo →</a>
       <a role="menuitem" id="arena-menu-arena-repo" href="https://github.com/arthrod/editors-arena" target="_blank" rel="noopener">editors-arena repo →</a>
       <a role="menuitem" id="arena-menu-contact" href="https://arthur.law/contact" target="_blank" rel="noopener">Contact →</a>
