@@ -53,20 +53,36 @@ parent -> child  {source:"editors-arena", type:"open", name, bytes: ArrayBuffer}
 
 ## Engines
 
-| Engine          | License          | Source                                                            |
-| --------------- | ---------------- | ----------------------------------------------------------------- |
-| canvas-editor   | MIT              | [Hufe921/canvas-editor](https://github.com/Hufe921/canvas-editor) |
-| Docxodus        | MIT              | [JSv4/Docxodus](https://github.com/JSv4/Docxodus)                 |
-| SuperDoc        | AGPL-3.0         | [superdoc/docx-editor](https://github.com/superdoc/docx-editor)   |
-| Plate           | MIT              | [udecode/plate](https://github.com/udecode/plate)                 |
-| docen           | MIT              | [DemoMacro/docen](https://github.com/DemoMacro/docen)             |
-| docx-editor.dev | Apache-2.0       | [eigenpal/docx-editor](https://github.com/eigenpal/docx-editor)   |
-| folio           | Apache-2.0       | [stella/folio](https://github.com/stella/folio)                   |
-| WordCraft       | Apache-2.0 / MIT | [storytold/wordcraft](https://github.com/storytold/wordcraft)     |
+| Engine                      | Slug            | License          | Source                                                                      |
+| --------------------------- | --------------- | ---------------- | --------------------------------------------------------------------------- |
+| canvas-editor               | `canvas-editor` | MIT              | [Hufe921/canvas-editor](https://github.com/Hufe921/canvas-editor)           |
+| Docxodus                    | `docxodus`      | MIT              | [JSv4/Docxodus](https://github.com/JSv4/Docxodus)                           |
+| SuperDoc                    | `superdoc`      | AGPL-3.0         | [superdoc/docx-editor](https://github.com/superdoc/docx-editor)             |
+| Plate                       | `plate`         | MIT              | [udecode/plate](https://github.com/udecode/plate)                           |
+| docen                       | `docen`         | MIT              | [DemoMacro/docen](https://github.com/DemoMacro/docen)                       |
+| docx-editor.dev             | `eigenpal`      | Apache-2.0       | [eigenpal/docx-editor](https://github.com/eigenpal/docx-editor)             |
+| folio                       | `folio`         | Apache-2.0       | [stella/folio](https://github.com/stella/folio)                             |
+| WordCraft                   | `wordcraft`     | Apache-2.0 / MIT | [storytold/wordcraft](https://github.com/storytold/wordcraft)               |
+| react-docx                  | `react-docx`    | MIT              | [extend-hq/react-docx](https://github.com/extend-hq/react-docx)             |
+| Univer                      | `univer`        | Apache-2.0       | [dream-num/univer](https://github.com/dream-num/univer)                     |
+| OpenDoc                     | `opendoc`       | Apache-2.0       | [CasualOffice/opendoc](https://github.com/CasualOffice/opendoc)             |
+| BetterOffice                | `betteroffice`  | Apache-2.0       | [openooxml/betteroffice](https://github.com/openooxml/betteroffice)         |
+| OnlyOffice (CryptPad build) | `onlyoffice`    | AGPL-3.0         | [cryptpad/onlyoffice-editor](https://github.com/cryptpad/onlyoffice-editor) |
 
-Only engines that actually edit are offered. The list mirrors the open-docs
-registry, minus its proprietary viewers and cite-check (an app built on
-canvas-editor, not a separate engine).
+Thirteen engines. Only engines that actually edit are offered. The list mirrors
+the open-docs registry, minus its proprietary viewers and cite-check (an app
+built on canvas-editor, not a separate engine). The slug is what goes in the
+URL: `?e=onlyoffice,opendoc,betteroffice`.
+
+The last five were added on 2026-11-20, two days after open-docs got them:
+
+- **Univer** edits, but its open-source packages have no .docx reader. A file
+  opened in its slot arrives as text and headings, read by open-docs; what you
+  see there is not Univer's rendering of the file.
+- **OpenDoc** and **OnlyOffice** each run their own application in a frame
+  inside the slot's frame, and download about 20 MB and 18 MB to start
+  (WordCraft: 22 MB).
+- **SuperDoc** and **OnlyOffice** are AGPL-3.0.
 
 ## Development
 
@@ -84,7 +100,7 @@ main.http.ts        Hono app: GET / returns the page, /client/* serves modules
 client/arena.ts     slot grid, lazy iframes, message routing, URL state
 client/protocol.ts  pure helpers (parseState, parseChildMessage, makeOpen, makeMenu, ...)
 protocol_test.ts    Deno tests for the pure helpers
-engines.ts          the eight engines, copied from the open-docs registry
+engines.ts          the thirteen engines, copied from the open-docs registry
 styles.ts           the page's CSS as a string (benchmarks.law design system)
 valtown.d.ts        local copy of the Val Town ambient types
 ```

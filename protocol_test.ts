@@ -211,3 +211,13 @@ Deno.test("styles: attribute selectors with numeric values are quoted (unquoted 
   const bad = CSS.match(/\[[a-z-]+=\d[^\]]*\]/g);
   if (bad) throw new Error(`unquoted numeric attribute selectors: ${bad.join(", ")}`);
 });
+
+Deno.test("engines: the five added to open-docs on 2026-11-18 are offered, once each", async () => {
+  const { engines, engineSlugs, getEngine } = await import("./engines.ts");
+  for (const slug of ["react-docx", "univer", "opendoc", "betteroffice", "onlyoffice"]) {
+    assert(engineSlugs.includes(slug), `${slug} is missing from the arena`);
+    assert(getEngine(slug)?.repo.startsWith("https://github.com/"), `${slug} has no repository`);
+  }
+  assertEquals(engines.length, 13);
+  assertEquals(new Set(engineSlugs).size, engineSlugs.length);
+});
