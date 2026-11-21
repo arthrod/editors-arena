@@ -11,7 +11,7 @@ Legend: `[x]` done and checked live · `[~]` in progress · `[ ]` not done ·
 
 - [ ] 1.1 What it is
 - [ ] 1.2 How it works (protocol between the page and each editor frame)
-- [ ] 1.3 Engines: every editor of editors.benchmarks.law is listed, or the list says why one is missing
+- [x] 1.3 Engines: all thirteen editors of editors.benchmarks.law are listed (the four view-only renderers do not edit, and the README says so)
 - [ ] 1.4 Development, Files
 
 ## 2. The arena itself
@@ -23,10 +23,11 @@ Legend: `[x]` done and checked live · `[~]` in progress · `[ ]` not done ·
 ## 3. Cross-site consistency
 
 - [ ] 3.1 Same menu as editors.benchmarks.law, with the Blog link
-- [ ] 3.2 Each engine links to its vendor note at `benchmarks.law/editors-trial/vendor-notes`
+- [x] 3.2 Each engine links to its vendor note at `benchmarks.law/editors-trial/vendor-notes` (live 2026-11-21; the sections of the six new tools appear on benchmarks.law with its next deploy)
 
 ## Log
 
 | Date | Part | What changed |
 | --- | --- | --- |
 | 2026-11-21 | all | Checklist created |
+| 2026-11-21 | 3.2 | Each engine links to its vendor note |
