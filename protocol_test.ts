@@ -235,5 +235,5 @@ Deno.test("every arena engine whose section is published has a vendor note on be
     if (!note?.startsWith("https://benchmarks.law/editors-trial/vendor-notes#")) throw new Error(`${e.slug}: ${note}`);
   }
   if (vendorNote("plate") !== "https://benchmarks.law/editors-trial/vendor-notes#platejs") throw new Error("plate");
-  if (vendorNote("nope") !== null) throw new Error("unknown slug");
+  for (const s of ["nope", "constructor", "toString"]) if (vendorNote(s) !== null) throw new Error(`unknown slug ${s}`);
 });
