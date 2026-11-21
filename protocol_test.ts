@@ -221,3 +221,13 @@ Deno.test("engines: the five added to open-docs on 2026-11-18 are offered, once 
   assertEquals(engines.length, 13);
   assertEquals(new Set(engineSlugs).size, engineSlugs.length);
 });
+
+Deno.test("every arena engine has a vendor note on benchmarks.law, at the open-docs registry's anchor", async () => {
+  const { engines, vendorNote } = await import("./engines.ts");
+  for (const e of engines) {
+    const note = vendorNote(e.slug);
+    if (!note?.startsWith("https://benchmarks.law/editors-trial/vendor-notes#")) throw new Error(`${e.slug}: ${note}`);
+  }
+  if (vendorNote("plate") !== "https://benchmarks.law/editors-trial/vendor-notes#platejs") throw new Error("plate");
+  if (vendorNote("nope") !== null) throw new Error("unknown slug");
+});

@@ -125,6 +125,28 @@ export const engines: EngineMeta[] = [
   },
 ];
 
+/** Where benchmarks.law describes each vendor: one page, one section per tool. */
+export const VENDOR_NOTES = "https://benchmarks.law/editors-trial/vendor-notes";
+/** Engine → its section's anchor there. Copied from the open-docs registry (VENDOR_NOTE_ANCHOR). */
+const VENDOR_NOTE_ANCHOR: Record<string, string> = {
+  "canvas-editor": "canvas-editor",
+  docxodus: "docxodus",
+  superdoc: "superdoc",
+  plate: "platejs",
+  docen: "docen",
+  eigenpal: "eigenpal",
+  folio: "folio",
+  wordcraft: "wordcraft",
+  "react-docx": "react-docx",
+  univer: "univer",
+  opendoc: "opendoc",
+  betteroffice: "betteroffice",
+  onlyoffice: "onlyoffice-cryptpad-build",
+};
+/** The vendor note of an engine: pros, cons and every benchmark of it. */
+export const vendorNote = (slug: string): string | null =>
+  VENDOR_NOTE_ANCHOR[slug] ? `${VENDOR_NOTES}#${VENDOR_NOTE_ANCHOR[slug]}` : null;
+
 export const engineSlugs: string[] = engines.map((e) => e.slug);
 
 export function getEngine(slug: string): EngineMeta | undefined {
