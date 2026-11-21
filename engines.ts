@@ -125,6 +125,34 @@ export const engines: EngineMeta[] = [
   },
 ];
 
+/** Where benchmarks.law describes each vendor: one page, one section per tool. */
+export const VENDOR_NOTES = "https://benchmarks.law/editors-trial/vendor-notes";
+/** Engine → its section's anchor there. Copied from the open-docs registry (VENDOR_NOTE_ANCHOR). */
+const VENDOR_NOTE_ANCHOR: Record<string, string> = {
+  "canvas-editor": "canvas-editor",
+  docxodus: "docxodus",
+  superdoc: "superdoc",
+  plate: "platejs",
+  docen: "docen",
+  eigenpal: "eigenpal",
+  folio: "folio",
+  wordcraft: "wordcraft",
+  "react-docx": "react-docx",
+  univer: "univer",
+  opendoc: "opendoc",
+  betteroffice: "betteroffice",
+  onlyoffice: "onlyoffice-cryptpad-build",
+};
+/**
+ * Sections written in the trial's vendor notes and not yet on benchmarks.law (they arrive with its
+ * next release and deploy). Until then these engines get no link: one would land at the top of the
+ * page, not on a note. Empty this set when the page has the sections (CHECKLIST 4.3).
+ */
+export const VENDOR_NOTE_PENDING: ReadonlySet<string> = new Set(["react-docx", "univer", "opendoc", "betteroffice", "onlyoffice"]);
+/** The vendor note of an engine: pros, cons and every benchmark of it. Null when benchmarks.law has no section for it. */
+export const vendorNote = (slug: string): string | null =>
+  VENDOR_NOTE_ANCHOR[slug] && !VENDOR_NOTE_PENDING.has(slug) ? `${VENDOR_NOTES}#${VENDOR_NOTE_ANCHOR[slug]}` : null;
+
 export const engineSlugs: string[] = engines.map((e) => e.slug);
 
 export function getEngine(slug: string): EngineMeta | undefined {
