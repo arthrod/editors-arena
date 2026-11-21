@@ -1,11 +1,13 @@
 /**
- * The eight editing engines offered in the arena.
+ * The thirteen editing engines offered in the arena.
  *
  * Names, licenses, repos and blurbs are copied from the open-docs registry
- * (od-design/server/registry.ts, the single source of truth there). Only
+ * (open-docs/server/registry.ts, the single source of truth there). Only
  * engines that actually edit are listed: kind:"viewer" entries are excluded,
  * and so is cite-check, an app built on canvas-editor rather than a
- * separate engine.
+ * separate engine. The last five were added to open-docs on 2026-11-18.
+ * Univer edits, but its open-source packages have no .docx reader: a file
+ * opened in its slot arrives as text and headings only.
  */
 export interface EngineMeta {
   /** URL segment: https://editors.benchmarks.law/e/<slug> */
@@ -80,6 +82,46 @@ export const engines: EngineMeta[] = [
     repo: "https://github.com/storytold/wordcraft",
     blurb:
       "A clean-room Word in pure Rust: its own layout engine and egui UI drawn into one canvas via WebGPU/WebGL2.",
+  },
+  {
+    slug: "react-docx",
+    name: "react-docx",
+    license: "MIT",
+    repo: "https://github.com/extend-hq/react-docx",
+    blurb:
+      "Paginated DOCX viewer and editor on a Rust/WASM parser (Rust Office), with review and thumbnails; a framework-free entry with Preact inside.",
+  },
+  {
+    slug: "univer",
+    name: "Univer",
+    license: "Apache-2.0",
+    repo: "https://github.com/dream-num/univer",
+    blurb:
+      "Office SDK with a canvas document editor. Its open-source packages have no .docx import or export (those are in its Server SDK), so documents arrive here as text.",
+  },
+  {
+    slug: "opendoc",
+    name: "OpenDoc",
+    license: "Apache-2.0",
+    repo: "https://github.com/CasualOffice/opendoc",
+    blurb:
+      "A deterministic Rust engine in WebAssembly that reads, lays out, paints and saves DOCX and ODT itself, with its own editor application; pre-release.",
+  },
+  {
+    slug: "betteroffice",
+    name: "BetterOffice",
+    license: "Apache-2.0",
+    repo: "https://github.com/openooxml/betteroffice",
+    blurb:
+      "Rust-native OOXML engines (parse, edit, layout) compiled to WebAssembly and run in a Worker, with a React editor, review cards and collaboration.",
+  },
+  {
+    slug: "onlyoffice",
+    name: "OnlyOffice (CryptPad build)",
+    license: "AGPL-3.0",
+    repo: "https://github.com/cryptpad/onlyoffice-editor",
+    blurb:
+      "OnlyOffice's document editor with no document server: CryptPad's build replaces the co-editing socket with messages to the page, and OnlyOffice's own converter (x2t) runs in WebAssembly.",
   },
 ];
 
