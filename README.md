@@ -33,6 +33,16 @@ different engines.
   editor's own menu inside the iframe) and an arrows-out icon (open that engine
   alone in a new tab) sit on the right. Global **Open .docx in all** and
   **Sample in all** stay in the top bar.
+- The top-bar **MENU** links to Editors, Viewers, the
+  [editors’ blog](https://editors.benchmarks.law/blog), both repositories and
+  Contact. These links open in a new tab.
+- At viewport widths of 1300 px and above, each slot’s licence chip links to
+  that engine’s [vendor note](https://benchmarks.law/editors-trial/vendor-notes)
+  in a new tab, falling back to its repository if no published note is mapped.
+  All thirteen current engines have mapped notes. Below 1300 px the chip is
+  hidden; the per-slot **MENU** opens the embedded editor’s menu, where
+  **About this editor** provides another route to the vendor note when the
+  editor iframe is available.
 
 Protocol v2 (open-docs embed mode, see PROTOCOL2.md):
 
@@ -99,8 +109,8 @@ vt push
 main.http.ts        Hono app: GET / returns the page, /client/* serves modules
 client/arena.ts     slot grid, lazy iframes, message routing, URL state
 client/protocol.ts  pure helpers (parseState, parseChildMessage, makeOpen, makeMenu, ...)
-protocol_test.ts    Deno tests for the pure helpers
-engines.ts          the thirteen engines, copied from the open-docs registry
+protocol_test.ts    Deno tests for pure helpers and vendor-note mappings
+engines.ts          thirteen engines and vendor-note mappings from open-docs
 styles.ts           the page's CSS as a string (benchmarks.law design system)
 valtown.d.ts        local copy of the Val Town ambient types
 ```
