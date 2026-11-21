@@ -77,7 +77,7 @@ the open-docs registry, minus its proprietary viewers and cite-check (an app
 built on canvas-editor, not a separate engine). The slug is what goes in the
 URL: `?e=onlyoffice,opendoc,betteroffice`.
 
-The last five were added on 2026-11-20, two days after open-docs got them:
+react-docx, Univer, OpenDoc, BetterOffice and OnlyOffice were added on 2026-11-20, two days after open-docs got them:
 
 - **Univer** edits, but its open-source packages have no .docx reader. A file
   opened in its slot arrives as text and headings, read by open-docs; what you

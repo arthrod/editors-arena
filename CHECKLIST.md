@@ -16,9 +16,9 @@ Legend: `[x]` done and checked live · `[~]` in progress · `[ ]` not done ·
 
 ## 2. The arena itself
 
-- [x] 2.1 Every listed engine loads the shared document in its pane. Checked in Chrome 2026-11-21: all thirteen, in five pages of two or three slots, answered `opened` within three seconds of "Sample in all", with no error message
+- [x] 2.1 Every listed engine loads the shared document in its pane. Checked in Chrome 2026-11-21: all thirteen, in five pages of two or three slots, answered `opened` within three seconds of "Sample in all", with no error message. GenOffice and docs.plus, added later that day: both panes showed the sample ("Coastal Wind Farm — Spring…", GenOffice at "Page 1 of 3") after "Sample in all"
 - [x] 2.2 The panes are independent by design: one file is opened in all of them and an edit stays in its pane. This line first said an edit reaches the other panes; the arena never did that and its README never said so
-- [x] 2.3 The engine picker shows the same names as the other sites (thirteen names read from the live picker, 2026-11-21)
+- [x] 2.3 The engine picker shows the same names as the other sites (fifteen names read from the live picker, 2026-11-21)
 
 ## 3. Cross-site consistency
 
