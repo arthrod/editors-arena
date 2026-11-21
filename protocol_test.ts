@@ -221,3 +221,19 @@ Deno.test("engines: the five added to open-docs on 2026-11-18 are offered, once 
   assertEquals(engines.length, 13);
   assertEquals(new Set(engineSlugs).size, engineSlugs.length);
 });
+
+Deno.test("every arena engine whose section is published has a vendor note on benchmarks.law, at the open-docs registry's anchor", async () => {
+  const { engines, vendorNote, VENDOR_NOTE_PENDING } = await import("./engines.ts");
+  if (VENDOR_NOTE_PENDING.size !== 0) throw new Error("pending set");
+  for (const e of engines) {
+    const note = vendorNote(e.slug);
+    // A section not yet published gets no link (the chip falls back to the repository), never one to the top of the page.
+    if (VENDOR_NOTE_PENDING.has(e.slug)) {
+      if (note !== null) throw new Error(`${e.slug}: linked before its section is published`);
+      continue;
+    }
+    if (!note?.startsWith("https://benchmarks.law/editors-trial/vendor-notes#")) throw new Error(`${e.slug}: ${note}`);
+  }
+  if (vendorNote("plate") !== "https://benchmarks.law/editors-trial/vendor-notes#platejs") throw new Error("plate");
+  if (vendorNote("nope") !== null) throw new Error("unknown slug");
+});

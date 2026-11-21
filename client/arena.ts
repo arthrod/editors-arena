@@ -2,7 +2,7 @@
  * Browser module: builds the slot grid, lazy-mounts editor iframes, speaks
  * the postMessage protocol with open-docs and keeps the ?e= URL state.
  */
-import { engines, getEngine } from "../engines.ts";
+import { engines, getEngine, vendorNote } from "../engines.ts";
 import {
   DEFAULT_SLUGS,
   makeExport,
@@ -23,7 +23,7 @@ interface Slot {
   el: HTMLElement | null;
   body: HTMLElement | null;
   statusEl: HTMLElement | null;
-  licEl: HTMLElement | null;
+  licEl: HTMLAnchorElement | null;
   select: HTMLSelectElement | null;
   alone: HTMLAnchorElement | null;
   menuBtn: HTMLButtonElement | null;
@@ -189,10 +189,12 @@ function mountSlot(s: Slot): void {
   pickIcon.height = 16;
   pick.append(pickIcon, select);
 
-  const lic = document.createElement("span");
+  // The licence chip is the way to the engine's vendor note (pros, cons, every benchmark).
+  const lic = document.createElement("a");
   lic.className = "lic";
-  lic.textContent = eng ? eng.license : "?";
-  if (eng) lic.title = eng.repo;
+  lic.target = "_blank";
+  lic.rel = "noopener";
+  aboutEngine(lic, s.slug);
 
   const status = document.createElement("span");
   status.className = "st";
@@ -290,14 +292,25 @@ function unmountSlot(s: Slot): void {
   s.openedName = null;
 }
 
+/** Fill a pane's licence chip for an engine: the licence, linked to its vendor note (its repository when it has none). */
+function aboutEngine(el: HTMLAnchorElement, slug: string): void {
+  const eng = getEngine(slug);
+  el.textContent = eng ? eng.license : "?";
+  const note = vendorNote(slug);
+  if (eng) {
+    el.href = note ?? eng.repo;
+    el.title = note ? `About ${eng.name}: pros, cons and every benchmark, on benchmarks.law` : eng.repo;
+  } else {
+    el.removeAttribute("href");
+    el.title = "";
+  }
+}
+
 function setEngine(s: Slot, slug: string): void {
   if (s.slug === slug) return;
   s.slug = slug;
   const eng = getEngine(slug);
-  if (s.licEl) {
-    s.licEl.textContent = eng ? eng.license : "?";
-    if (eng) s.licEl.title = eng.repo;
-  }
+  if (s.licEl) aboutEngine(s.licEl, slug);
   const name = eng ? eng.name : slug;
   if (s.alone) {
     s.alone.href = OPEN_DOCS_ORIGIN + "/e/" + slug;
