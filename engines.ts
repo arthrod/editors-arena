@@ -1,11 +1,15 @@
 /**
- * The thirteen editing engines offered in the arena.
+ * The fifteen editing engines offered in the arena.
  *
  * Names, licenses, repos and blurbs are copied from the open-docs registry
  * (open-docs/server/registry.ts, the single source of truth there). Only
  * engines that actually edit are listed: kind:"viewer" entries are excluded,
  * and so is cite-check, an app built on canvas-editor rather than a
- * separate engine. The last five were added to open-docs on 2026-11-18.
+ * separate engine. Five were added to open-docs on 2026-11-18, and GenOffice
+ * and docs.plus on 2026-11-21, through the editors trial's demo builds of them.
+ * The other two added that day are not offered: office-open is a library with no
+ * editor, and Fidus Writer's export fails on the site's samples, so an edit
+ * could not be read back from it.
  * Univer edits, but its open-source packages have no .docx reader: a file
  * opened in its slot arrives as text and headings only.
  */
@@ -123,6 +127,22 @@ export const engines: EngineMeta[] = [
     blurb:
       "OnlyOffice's document editor with no document server: CryptPad's build replaces the co-editing socket with messages to the page, and OnlyOffice's own converter (x2t) runs in WebAssembly.",
   },
+  {
+    slug: "genoffice",
+    name: "GenOffice",
+    license: "Apache-2.0",
+    repo: "https://github.com/genspark-ai/genoffice",
+    blurb:
+      "Genspark's desktop office suite: its Docs application is an Electron renderer, shown here with a stand-in for the desktop it expects.",
+  },
+  {
+    slug: "docs-plus",
+    name: "docs.plus",
+    license: "MIT",
+    repo: "https://github.com/docs-plus/docs.plus",
+    blurb:
+      "A collaborative Tiptap editor where every heading has its own chat: its own DOCX import (mammoth) and export around its editor, without the collaboration server.",
+  },
 ];
 
 /** Where benchmarks.law describes each vendor: one page, one section per tool. */
@@ -142,6 +162,8 @@ const VENDOR_NOTE_ANCHOR: Record<string, string> = {
   opendoc: "opendoc",
   betteroffice: "betteroffice",
   onlyoffice: "onlyoffice-cryptpad-build",
+  genoffice: "genoffice",
+  "docs-plus": "docsplus",
 };
 /**
  * Sections written in the trial's vendor notes and not yet on benchmarks.law: an engine named here

@@ -68,8 +68,11 @@ parent -> child  {source:"editors-arena", type:"open", name, bytes: ArrayBuffer}
 | OpenDoc                     | `opendoc`       | Apache-2.0       | [CasualOffice/opendoc](https://github.com/CasualOffice/opendoc)             |
 | BetterOffice                | `betteroffice`  | Apache-2.0       | [openooxml/betteroffice](https://github.com/openooxml/betteroffice)         |
 | OnlyOffice (CryptPad build) | `onlyoffice`    | AGPL-3.0         | [cryptpad/onlyoffice-editor](https://github.com/cryptpad/onlyoffice-editor) |
+| GenOffice                   | `genoffice`     | Apache-2.0       | [genspark-ai/genoffice](https://github.com/genspark-ai/genoffice)           |
+| docs.plus                   | `docs-plus`     | MIT              | [docs-plus/docs.plus](https://github.com/docs-plus/docs.plus)               |
 
-Thirteen engines. Only engines that actually edit are offered. The list mirrors
+Fifteen engines. Only engines that actually edit are offered (so not office-open, a library
+with no editor, nor Fidus Writer, whose export fails on the samples). The list mirrors
 the open-docs registry, minus its proprietary viewers and cite-check (an app
 built on canvas-editor, not a separate engine). The slug is what goes in the
 URL: `?e=onlyoffice,opendoc,betteroffice`.
@@ -100,7 +103,7 @@ main.http.ts        Hono app: GET / returns the page, /client/* serves modules
 client/arena.ts     slot grid, lazy iframes, message routing, URL state
 client/protocol.ts  pure helpers (parseState, parseChildMessage, makeOpen, makeMenu, ...)
 protocol_test.ts    Deno tests for the pure helpers
-engines.ts          the thirteen engines, copied from the open-docs registry
+engines.ts          the fifteen engines, copied from the open-docs registry
 styles.ts           the page's CSS as a string (benchmarks.law design system)
 valtown.d.ts        local copy of the Val Town ambient types
 ```

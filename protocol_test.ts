@@ -218,7 +218,9 @@ Deno.test("engines: the five added to open-docs on 2026-11-18 are offered, once 
     assert(engineSlugs.includes(slug), `${slug} is missing from the arena`);
     assert(getEngine(slug)?.repo.startsWith("https://github.com/"), `${slug} has no repository`);
   }
-  assertEquals(engines.length, 13);
+  for (const slug of ["genoffice", "docs-plus"]) assert(engineSlugs.includes(slug), `${slug} is missing from the arena`);
+  for (const slug of ["office-open", "fidus-writer"]) assert(!engineSlugs.includes(slug), `${slug} does not edit here and must not be offered`);
+  assertEquals(engines.length, 15);
   assertEquals(new Set(engineSlugs).size, engineSlugs.length);
 });
 
