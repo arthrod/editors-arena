@@ -224,7 +224,7 @@ Deno.test("engines: the five added to open-docs on 2026-11-18 are offered, once 
 
 Deno.test("every arena engine whose section is published has a vendor note on benchmarks.law, at the open-docs registry's anchor", async () => {
   const { engines, vendorNote, VENDOR_NOTE_PENDING } = await import("./engines.ts");
-  if ([...VENDOR_NOTE_PENDING].sort().join() !== "betteroffice,onlyoffice,opendoc,react-docx,univer") throw new Error("pending set");
+  if (VENDOR_NOTE_PENDING.size !== 0) throw new Error("pending set");
   for (const e of engines) {
     const note = vendorNote(e.slug);
     // A section not yet published gets no link (the chip falls back to the repository), never one to the top of the page.

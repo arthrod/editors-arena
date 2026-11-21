@@ -23,7 +23,7 @@ Legend: `[x]` done and checked live · `[~]` in progress · `[ ]` not done ·
 ## 3. Cross-site consistency
 
 - [ ] 3.1 Same menu as editors.benchmarks.law, with the Blog link
-- [~] 3.2 Each engine links to its vendor note at `benchmarks.law/editors-trial/vendor-notes` (live 2026-11-21 for the eight whose section is published; the five new editors get their link when benchmarks.law has their sections: empty `VENDOR_NOTE_PENDING` in `engines.ts` then)
+- [x] 3.2 Each engine links to its vendor note at `benchmarks.law/editors-trial/vendor-notes`, the six new tools included since benchmarks.law published their sections (et-v0.10.6, 2026-11-21)
 
 ## Log
 
@@ -31,3 +31,4 @@ Legend: `[x]` done and checked live · `[~]` in progress · `[ ]` not done ·
 | --- | --- | --- |
 | 2026-11-21 | all | Checklist created |
 | 2026-11-21 | 3.2 | Each engine links to its vendor note |
+| 2026-11-21 | vendor notes | benchmarks.law has the six new sections; their links are on |
