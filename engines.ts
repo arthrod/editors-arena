@@ -151,7 +151,7 @@ const VENDOR_NOTE_ANCHOR: Record<string, string> = {
 export const VENDOR_NOTE_PENDING: ReadonlySet<string> = new Set([]);
 /** The vendor note of an engine: pros, cons and every benchmark of it. Null when benchmarks.law has no section for it. */
 export const vendorNote = (slug: string): string | null =>
-  VENDOR_NOTE_ANCHOR[slug] && !VENDOR_NOTE_PENDING.has(slug) ? `${VENDOR_NOTES}#${VENDOR_NOTE_ANCHOR[slug]}` : null;
+  Object.hasOwn(VENDOR_NOTE_ANCHOR, slug) && !VENDOR_NOTE_PENDING.has(slug) ? `${VENDOR_NOTES}#${VENDOR_NOTE_ANCHOR[slug]}` : null;
 
 export const engineSlugs: string[] = engines.map((e) => e.slug);
 
