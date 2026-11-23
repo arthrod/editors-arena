@@ -65,5 +65,9 @@ Deno.test("the menu has the Blog link, to the editors site's blog, in a new tab"
   const blog = html.match(/<a role="menuitem" id="arena-menu-blog"[^>]*>([^<]*)<\/a>/);
   assert(blog, "no Blog item in the menu");
   assertEquals(blog[1], "Blog →");
-  assert(blog[0].includes(`href="https://editors.benchmarks.law/blog"`) && blog[0].includes(`target="_blank"`) && blog[0].includes(`rel="noopener"`), blog[0]);
+  // The attributes themselves, not substrings: `data-href="…"` contains `href="…"` and does not navigate (CodeRabbit on #17).
+  const attrs = Object.fromEntries([...blog[0].matchAll(/\s([\w-]+)="([^"]*)"/g)].map((m) => [m[1], m[2]]));
+  assertEquals(attrs.href, "https://editors.benchmarks.law/blog", blog[0]);
+  assertEquals(attrs.target, "_blank", blog[0]);
+  assert(attrs.rel?.split(/\s+/).includes("noopener"), blog[0]);
 });

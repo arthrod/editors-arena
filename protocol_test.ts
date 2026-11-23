@@ -228,9 +228,15 @@ Deno.test("every arena engine has a vendor note on benchmarks.law, at the open-d
   const { engines, vendorNote } = await import("./engines.ts");
   // The registry is the source the anchors were copied from: every engine's link must be the one it gives
   // (outside review, 2026-11-23: a wrong anchor lands at the top of the page and no test saw it).
+  // Live on purpose: a pinned copy would agree with itself and miss the drift this test exists to catch.
   const res = await fetch("https://esm.town/v/arthrod/open-docs/server/registry.ts", { redirect: "manual" });
   await res.body?.cancel();
-  const registry = await import(new URL(res.headers.get("location") ?? "/v/arthrod/open-docs/server/registry.ts", "https://esm.town").href);
+  const loc = res.headers.get("location");
+  // Fail with the reason, not with an import error on an HTML error page (Gitar on #17).
+  if (!(res.status === 200 || (res.status >= 300 && res.status < 400 && loc))) {
+    throw new Error(`esm.town answered ${res.status} for the open-docs registry; the comparison needs the network`);
+  }
+  const registry = await import(new URL(loc ?? "/v/arthrod/open-docs/server/registry.ts", "https://esm.town").href);
   for (const e of engines) {
     const want = registry.vendorNote(e.slug);
     if (!want) throw new Error(`${e.slug}: the registry has no vendor note for it`);
