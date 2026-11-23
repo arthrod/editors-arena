@@ -71,12 +71,13 @@ parent -> child  {source:"editors-arena", type:"open", name, bytes: ArrayBuffer}
 | GenOffice                   | `genoffice`     | Apache-2.0       | [genspark-ai/genoffice](https://github.com/genspark-ai/genoffice)           |
 | docs.plus                   | `docs-plus`     | MIT              | [docs-plus/docs.plus](https://github.com/docs-plus/docs.plus)               |
 
-Fifteen engines: every editor in the open-docs registry but two. office-open is left out
-because it is a library with no editor; Fidus Writer edits, but is left out because its .docx
-export fails on the samples, so an edit made in it could not be read back. Univer has no .docx
-export at all and is offered (see below): these are two exclusions, not one rule. The list mirrors
-the open-docs registry, minus its proprietary viewers and cite-check (an app
-built on canvas-editor, not a separate engine). The slug is what goes in the
+Fifteen engines: every editing engine in the open-docs registry but two. The registry's four
+proprietary viewers do not edit, and cite-check is an app built on canvas-editor rather than an
+engine of its own, so neither is offered. office-open is left out because it is a library with no
+editor; Fidus Writer edits, but is left out because its .docx export fails on the samples, so an
+edit made in it could not be read back. Univer has neither a .docx reader nor a .docx writer (a file
+opened in its slot arrives as text and headings, read by open-docs) and is offered (see below):
+these are two exclusions, not one rule. The slug is what goes in the
 URL: `?e=onlyoffice,opendoc,betteroffice`.
 
 react-docx, Univer, OpenDoc, BetterOffice and OnlyOffice were added on 2026-11-20, two days after open-docs got them:
