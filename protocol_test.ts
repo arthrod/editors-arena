@@ -224,18 +224,33 @@ Deno.test("engines: the five added to open-docs on 2026-11-18 are offered, once 
   assertEquals(new Set(engineSlugs).size, engineSlugs.length);
 });
 
-Deno.test("every arena engine whose section is published has a vendor note on benchmarks.law, at the open-docs registry's anchor", async () => {
-  const { engines, vendorNote, VENDOR_NOTE_PENDING } = await import("./engines.ts");
-  if (VENDOR_NOTE_PENDING.size !== 0) throw new Error("pending set");
+Deno.test("every arena engine has a vendor note on benchmarks.law, at the open-docs registry's anchor", async () => {
+  const { engines, vendorNote } = await import("./engines.ts");
+  // The registry is the source the anchors were copied from: every engine's link must be the one it gives
+  // (outside review, 2026-11-23: a wrong anchor lands at the top of the page and no test saw it).
+  const res = await fetch("https://esm.town/v/arthrod/open-docs/server/registry.ts", { redirect: "manual" });
+  await res.body?.cancel();
+  const registry = await import(new URL(res.headers.get("location") ?? "/v/arthrod/open-docs/server/registry.ts", "https://esm.town").href);
   for (const e of engines) {
-    const note = vendorNote(e.slug);
-    // A section not yet published gets no link (the chip falls back to the repository), never one to the top of the page.
-    if (VENDOR_NOTE_PENDING.has(e.slug)) {
-      if (note !== null) throw new Error(`${e.slug}: linked before its section is published`);
-      continue;
-    }
-    if (!note?.startsWith("https://benchmarks.law/editors-trial/vendor-notes#")) throw new Error(`${e.slug}: ${note}`);
+    const want = registry.vendorNote(e.slug);
+    if (!want) throw new Error(`${e.slug}: the registry has no vendor note for it`);
+    if (vendorNote(e.slug) !== want) throw new Error(`${e.slug}: ${vendorNote(e.slug)} is not the registry's ${want}`);
   }
-  if (vendorNote("plate") !== "https://benchmarks.law/editors-trial/vendor-notes#platejs") throw new Error("plate");
   for (const s of ["nope", "constructor", "toString"]) if (vendorNote(s) !== null) throw new Error(`unknown slug ${s}`);
+});
+
+Deno.test("a section not yet published gets no link, never one to the top of the page", async () => {
+  const { vendorNote } = await import("./engines.ts");
+  if (vendorNote("plate", new Set(["plate"])) !== null) throw new Error("linked before its section is published");
+  if (vendorNote("plate", new Set(["folio"])) === null) throw new Error("another engine's pending section hid this one");
+});
+
+Deno.test("styles: the licence chip, the only link to an engine's vendor note, is never hidden; narrow panes show it as a small 'i'", async () => {
+  // Outside review, 2026-11-23: below 1300 px the chip was display:none, so the vendor note had no link at all.
+  const { CSS } = await import("./styles.ts");
+  const flat = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
+  if (/\.lic\{[^}]*display:none/.test(flat)) throw new Error("a rule hides the licence chip");
+  const narrow = flat.match(/@media \(max-width:1299px\)\{([\s\S]*?\})\}/)?.[1] ?? "";
+  if (!/\.lic::after\{[^}]*content:"i"/.test(narrow)) throw new Error("narrow panes do not show the chip as an 'i'");
+  if (!/\.lic\{[^}]*font-size:0/.test(narrow)) throw new Error("the licence text is not folded away in narrow panes");
 });

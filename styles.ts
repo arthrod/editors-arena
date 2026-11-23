@@ -64,7 +64,8 @@ html{margin:0;padding:0}
 .engine-pick{display:contents}
 .engine-pick img{display:none}
 a.lic:hover{background:var(--ink);color:var(--surface)}
-@media (max-width:1299px){.lic{display:none}}
+/* Narrow panes: the licence chip folds to a boxed "i" (its text stays for screen readers and its title), never hidden: it is the only link to the vendor note. */
+@media (max-width:1299px){.lic{font-size:0;letter-spacing:0;padding:0;width:20px;height:20px;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center}.lic::after{content:"i";font-size:11px;font-weight:600;font-family:var(--mono);text-transform:none}}
 @media (max-width:1199px){.slot-head{flex-wrap:wrap}}
 @media (max-width:820px){.slots{grid-template-columns:1fr}.slot{min-height:70vh}.slot-head{flex-wrap:wrap}}
 /* Phones: the engine dropdown is a boxed numpad icon (the native select sits over it, transparent) and MENU is the boxed burger alone. */
