@@ -34,7 +34,7 @@ different engines.
   alone in a new tab) sit on the right. Global **Open .docx in all** and
   **Sample in all** stay in the top bar.
 
-Protocol v2 (open-docs embed mode, see PROTOCOL2.md):
+Protocol v2 (open-docs embed mode; this block and the header of `client/protocol.ts` are its only description):
 
 ```
 child -> parent  {source:"open-docs", type:"ready", slug, name, startupMs?}
@@ -71,8 +71,10 @@ parent -> child  {source:"editors-arena", type:"open", name, bytes: ArrayBuffer}
 | GenOffice                   | `genoffice`     | Apache-2.0       | [genspark-ai/genoffice](https://github.com/genspark-ai/genoffice)           |
 | docs.plus                   | `docs-plus`     | MIT              | [docs-plus/docs.plus](https://github.com/docs-plus/docs.plus)               |
 
-Fifteen engines. Only engines that actually edit are offered (so not office-open, a library
-with no editor, nor Fidus Writer, whose export fails on the samples). The list mirrors
+Fifteen engines: every editor in the open-docs registry but two. office-open is left out
+because it is a library with no editor; Fidus Writer edits, but is left out because its .docx
+export fails on the samples, so an edit made in it could not be read back. Univer has no .docx
+export at all and is offered (see below): these are two exclusions, not one rule. The list mirrors
 the open-docs registry, minus its proprietary viewers and cite-check (an app
 built on canvas-editor, not a separate engine). The slug is what goes in the
 URL: `?e=onlyoffice,opendoc,betteroffice`.
