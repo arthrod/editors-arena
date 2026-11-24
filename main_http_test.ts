@@ -58,3 +58,16 @@ Deno.test("crumb reads / arena and Contact is the last menu item (#5)", async ()
   assertEquals(items.at(-1), "Contact →");
   assert(menu.includes(`href="https://arthur.law/contact"`));
 });
+
+Deno.test("the menu has the Blog link, to the editors site's blog, in a new tab", async () => {
+  // The one menu item no test covered (outside review, 2026-11-23).
+  const html = await getHtml();
+  const blog = html.match(/<a role="menuitem" id="arena-menu-blog"[^>]*>([^<]*)<\/a>/);
+  assert(blog, "no Blog item in the menu");
+  assertEquals(blog[1], "Blog →");
+  // The attributes themselves, not substrings: `data-href="…"` contains `href="…"` and does not navigate (CodeRabbit on #17).
+  const attrs = Object.fromEntries([...blog[0].matchAll(/\s([\w-]+)="([^"]*)"/g)].map((m) => [m[1], m[2]]));
+  assertEquals(attrs.href, "https://editors.benchmarks.law/blog", blog[0]);
+  assertEquals(attrs.target, "_blank", blog[0]);
+  assert(attrs.rel?.split(/\s+/).includes("noopener"), blog[0]);
+});

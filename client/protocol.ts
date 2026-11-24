@@ -2,7 +2,7 @@
  * Pure helpers for the editors-arena postMessage protocol and URL state.
  * No DOM access: every function here is unit-tested in protocol_test.ts.
  *
- * Embed protocol v2 (see PROTOCOL2.md):
+ * Embed protocol v2 (described here and in the README; there is no separate PROTOCOL2.md):
  *   child -> parent: ready | error | opened | exported | menu
  *   parent -> child: open | sample | export | menu
  */

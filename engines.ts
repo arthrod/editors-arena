@@ -168,12 +168,13 @@ const VENDOR_NOTE_ANCHOR: Record<string, string> = {
 /**
  * Sections written in the trial's vendor notes and not yet on benchmarks.law: an engine named here
  * gets no link, since one would land at the top of the page, not on a note. Empty since
- * 2026-11-21 (et-v0.10.6 published the six that were held back).
+ * 2026-11-21 (et-v0.10.6 published the six that were held back; five of them are arena engines, the
+ * sixth, Nutrient, is a viewer the arena does not offer).
  */
 export const VENDOR_NOTE_PENDING: ReadonlySet<string> = new Set([]);
 /** The vendor note of an engine: pros, cons and every benchmark of it. Null when benchmarks.law has no section for it. */
-export const vendorNote = (slug: string): string | null =>
-  Object.hasOwn(VENDOR_NOTE_ANCHOR, slug) && !VENDOR_NOTE_PENDING.has(slug) ? `${VENDOR_NOTES}#${VENDOR_NOTE_ANCHOR[slug]}` : null;
+export const vendorNote = (slug: string, pending: ReadonlySet<string> = VENDOR_NOTE_PENDING): string | null =>
+  Object.hasOwn(VENDOR_NOTE_ANCHOR, slug) && !pending.has(slug) ? `${VENDOR_NOTES}#${VENDOR_NOTE_ANCHOR[slug]}` : null;
 
 export const engineSlugs: string[] = engines.map((e) => e.slug);
 
